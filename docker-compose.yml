@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: autonomous-code-improver-app
+    ports:
+      - "8000:8000"
+    environment:
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=password
+      - POSTGRES_URI=postgresql://postgres:password@postgres:5432/autonomous_code_improver
+      - REDIS_URL=redis://redis:6379
+      - NATS_URL=nats://nats:4222
+      - LLM_ENDPOINT=http://llm:8000/v1
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    depends_on:
+      - neo4j
+      - postgres
+      - redis
+      - nats
+    networks:
+      - autonomous-code-improver-network
+    volumes:
+      - ./artifacts:/app/artifacts
+
+  # Neo4j
+  neo4j:
+    extends:
+      file: ./infra/neo4j/docker-compose.override.yml
+      service: neo4j
+
+  # PostgreSQL
+  postgres:
+    extends:
+      file: ./infra/postgres/docker-compose.yml
+      service: postgres
+
+  # Redis
+  redis:
+    extends:
+      file: ./infra/redis/docker-compose.yml
+      service: redis
+
+  # NATS
+  nats:
+    extends:
+      file: ./infra/nats/docker-compose.yml
+      service: nats
+
+  # UI
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    container_name: autonomous-code-improver-ui
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - app
+    networks:
+      - autonomous-code-improver-network
+
+networks:
+  autonomous-code-improver-network:
+    driver: bridge
+
+volumes:
+  neo4j_data:
+  postgres_data:
+  redis_data:
+  nats_data:

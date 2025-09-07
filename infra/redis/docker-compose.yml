@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - autonomous-code-improver-network
+
+volumes:
+  redis_data:
+
+networks:
+  autonomous-code-improver-network:
+    driver: bridge

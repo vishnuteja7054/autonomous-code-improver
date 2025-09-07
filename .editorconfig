@@ -1,0 +1,36 @@
+# This is the top-most .editorconfig file
+root = true
+
+# All Files
+[*]
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+# Python Files
+[*.py]
+max_line_length = 88
+
+# Documentation Files
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = 100
+
+# YAML Files
+[*.{yml,yaml}]
+indent_size = 2
+
+# JSON Files
+[*.json]
+indent_size = 2
+
+# Web Files
+[*.{js,jsx,ts,tsx,html,css,scss}]
+indent_size = 2
+
+# Makefile
+[Makefile]
+indent_style = tab
